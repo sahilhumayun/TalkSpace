@@ -1,14 +1,15 @@
 import express from "express";
-import { signup } from "../controllers/auth.controller.js";
+import { login, logout, signup, updateProfileDetails } from "../controllers/auth.controller.js";
+import { verfiyJWT } from "../middleware/auth.middleware.js";
+
+
 const router = express.Router()
 
 router.post("/signup", signup)
 
-router.get("/login",(req,res)=>{
-    res.send("login user")
-})
-router.get("/logout",(req,res)=>{
-    res.send("logout user")
-})
+router.post("/login",login)
+router.post("/logout", verfiyJWT,logout)
+router.put("/update-Profile",verfiyJWT,updateProfileDetails)
+
 
 export default router
