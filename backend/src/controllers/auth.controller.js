@@ -1,3 +1,4 @@
+import { uploadOnCloudinary } from "../../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import { generateAccessAndRefreshToken } from "./generateAccessAndRefreshToken.js";
 
@@ -14,10 +15,19 @@ export const signup = async (req, res) => {
     if (password.length < 6) {
         return res.status(400).json({ message: "Password must be at least 6 characters long" });
     }
+    const avatarLocalPath = req.file?.path
+    if (!avatarLocalPath) {
+        return res.status(400).json({ message: "Please upload an avatar" });
+    }
+    const avatar =  await uploadOnCloudinary(avatarLocalPath)
+    if (!avatar) {
+        return res.status(500).json({ message: "PLease Upload an avatar" });
+    }
     const user = await User.create({
         fullname: fullname.toLowerCase(),
         email,
-        password
+        password,
+        avatar,
     })
     if (user) {
         const {accessToken,refreshToken}=await generateAccessAndRefreshToken(user._id)

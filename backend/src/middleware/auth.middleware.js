@@ -10,7 +10,7 @@ export const verfiyJWT =async (req,res,next)=>{
             return res.status(401).json({message:"Unauthenticated"})
         }
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-        const user = await User.findById(decodedToken.id).select("-password")
+        const user = await User.findById(decodedToken?._id).select("-password")
         if (!user) {
             return res.status(401).json({message:"Invalid token"})
         }
