@@ -2,6 +2,7 @@ import { uploadOnCloudinary } from "../../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import { generateAccessAndRefreshToken } from "./generateAccessAndRefreshToken.js";
 
+//conroller for signup, login and logout
 export const signup = async (req, res) => {
     const {fullname, email, password} = req.body
     if (!fullname || !email || !password) {
@@ -39,7 +40,7 @@ export const signup = async (req, res) => {
         .status(201)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-        .json({ _id: user._id, email: user.email, fullname: user.fullname, message: "User created successfully" })
+        .json({ _id: user._id, email: user.email, fullname: user.fullname, avatar: user.avatar, message: "User created successfully" })
     }
     else {
         return res.status(400).json({ message: "User not created" });
@@ -86,6 +87,7 @@ export const logout = async (req, res) => {
     .json({ message: "Logged out successfully" })
 }  
 
+//controller for updating profile details and avatar
 export const updateProfileDetails = async (req, res) => {
     const {fullname, email} = req.body
     if (!fullname || !email) {
@@ -103,4 +105,23 @@ export const updateProfileDetails = async (req, res) => {
     .json({email: user.email, fullname: user.fullname, message: "Profile updated successfully" })
 
 
+}
+export const updateProfileAvatar = async (req, res) => {
+    const avatarLocalPath = req.file?.path
+    if (!avatarLocalPath) {
+        return res.status(400).json({ message: "Please upload an avatar" });
+    }
+    const avatar =  await uploadOnCloudinary(avatarLocalPath)
+    if (!avatar) {
+        return res.status(500).json({ message: "PLease Upload an avatar" });
+    }
+    const user = await User.findByIdAndUpdate(req.user._id, {
+        $set:{
+        avatar,
+    }}, {
+        new: true,
+    }).select("-password")
+    return res
+    .status(201)
+    .json({email: user.email, fullname: user.fullname, avatar: user.avatar, message: "Avatar updated successfully" })
 }

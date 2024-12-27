@@ -1,7 +1,6 @@
-import { text } from "express";
-import mongoose from "mongoose";
+import mongoose, {Schema} from "mongoose";
 
-const messageSchema = new mongoose.Schema({
+const messageSchema = new Schema({
     senderId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -12,7 +11,6 @@ const messageSchema = new mongoose.Schema({
     },
     text: {
         type: String,
-        required: true,
     },
     media: {
         type: String,

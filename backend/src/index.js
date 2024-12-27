@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import authRoutes from './routes/auth.route.js'
 import { connectDB } from './db/db.js'
 import cookieParser from 'cookie-parser'
+import messageRoutes from './routes/message.routes.js'
 import cors from 'cors'
 
 dotenv.config({
@@ -19,6 +20,7 @@ app.use(cors({
     credentials: true
 }))
 app.use('/api/auth' , authRoutes)
+app.use('/api/message', messageRoutes)
 
 
 const PORT = process.env.PORT || 8000
