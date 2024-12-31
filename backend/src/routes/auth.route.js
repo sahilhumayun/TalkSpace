@@ -1,5 +1,5 @@
 import express from "express";
-import { login, logout, signup, updateProfileAvatar, updateProfileDetails } from "../controllers/auth.controller.js";
+import { login, logout, signup, updateProfileAvatar, updateProfileDetails,checkAuth } from "../controllers/auth.controller.js";
 import { verfiyJWT } from "../middleware/auth.middleware.js";
 import { upload } from "./../middleware/multer.middleware.js"
 
@@ -12,5 +12,6 @@ router.post("/login",login)
 router.post("/logout", verfiyJWT,logout)
 router.put("/update-Profile",verfiyJWT,updateProfileDetails)
 router.put("/update-avatar",verfiyJWT,upload.single("avatar"),updateProfileAvatar)
+router.get("/check-auth",verfiyJWT, checkAuth)
 
 export default router

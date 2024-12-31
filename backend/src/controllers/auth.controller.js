@@ -125,3 +125,13 @@ export const updateProfileAvatar = async (req, res) => {
     .status(201)
     .json({email: user.email, fullname: user.fullname, avatar: user.avatar, message: "Avatar updated successfully" })
 }
+
+//controller for checking auth
+export const checkAuth = async (req, res) => {
+    try {
+        res.status(200).json({ message: "User is authenticated" },req.user);
+    } catch (error) {
+        console.log("Error in checkAuth", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
