@@ -7,7 +7,7 @@ import {Loader} from 'lucide-react'
 import HomePage from './components/homePage/HomePage';
 import Signup from './components/signup/signup';
 import Login from './components/login/login';
-
+import { Toaster } from 'react-hot-toast';
 
 function App() {
 const {authUser,isCheckingAuth,checkAuth} = useAuthStore();
@@ -31,6 +31,8 @@ if (isCheckingAuth && !authUser) return(
         <Route path="/login" element={<Login />} />
       </Routes>
       
+    <Toaster/>
+
     </div>
   )
 }
