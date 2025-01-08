@@ -5,24 +5,32 @@ import { Link } from "react-router-dom";
 import AuthImagePattern from "../Patterns/AuthImagePatterns";
 import toast from "react-hot-toast";
 
-function Signup() {
-  const [FullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { isSigningUp, signup } = useAuthStore();
+  const [formData, setFormData] = useState({
+    fullname: "",
+    email: "",
+    password: "",
+  });
+
+  const { signup, isSigningUp } = useAuthStore();
+
   const validateForm = () => {
-    if(FullName.trim() === '') return toast.error('Full Name is required');
-    if(!email) return toast.error('Email is required');
-    if(!password) return toast.error('Password is required');
-    if(password.length < 6) return toast.error('Password must be at least 6 characters long');
+    if (!formData.fullname.trim()) return toast.error("Full name is required");
+    if (!formData.email.trim()) return toast.error("Email is required");
+    if (!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email format");
+    if (!formData.password) return toast.error("Password is required");
+    if (formData.password.length < 6) return toast.error("Password must be at least 6 characters");
+
     return true;
-  }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(!validateForm()) return toast.error('Please fill all fields');
-    
 
+    const success = validateForm();
+
+    if (success === true) signup(formData);
   };
 
   return (
@@ -57,8 +65,8 @@ function Signup() {
                   type="text"
                   className={`input input-bordered w-full pl-10`}
                   placeholder="John Doe"
-                  value={FullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  value={formData.fullname}
+                  onChange={(e) => setFormData({ ...formData, fullname: e.target.value })}
                 />
               </div>
             </div>
@@ -75,8 +83,8 @@ function Signup() {
                   type="email"
                   className={`input input-bordered w-full pl-10`}
                   placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </div>
             </div>
@@ -93,8 +101,8 @@ function Signup() {
                   type={showPassword ? "text" : "password"}
                   className={`input input-bordered w-full pl-10`}
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
                 <button
                   type="button"
@@ -141,6 +149,5 @@ function Signup() {
       />
     </div>
   );
-}
-
-export default Signup;
+};
+export default SignUpPage;

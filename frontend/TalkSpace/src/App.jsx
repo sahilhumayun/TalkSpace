@@ -26,9 +26,9 @@ if (isCheckingAuth && !authUser) return(
     <div>
       <Navbar />
       <Routes>
-        <Route path="/" element={!authUser?<HomePage />: <Navigate to='/login'/>}/>,
-        <Route path="/signup" element={<Signup />} />,
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={authUser?<HomePage />: <Navigate to='/login'/>}/>,
+        <Route path="/signup" element={!authUser?<Signup />: <Navigate to='/'/>} />,
+        <Route path="/login" element={!authUser?<Login />:<Navigate to='/'/>} />
       </Routes>
       
     <Toaster/>

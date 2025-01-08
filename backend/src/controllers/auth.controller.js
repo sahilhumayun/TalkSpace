@@ -16,19 +16,10 @@ export const signup = async (req, res) => {
     if (password.length < 6) {
         return res.status(400).json({ message: "Password must be at least 6 characters long" });
     }
-    const avatarLocalPath = req.file?.path
-    if (!avatarLocalPath) {
-        return res.status(400).json({ message: "Please upload an avatar" });
-    }
-    const avatar =  await uploadOnCloudinary(avatarLocalPath)
-    if (!avatar) {
-        return res.status(500).json({ message: "PLease Upload an avatar" });
-    }
     const user = await User.create({
         fullname: fullname.toLowerCase(),
         email,
         password,
-        avatar,
     })
     if (user) {
         const {accessToken,refreshToken}=await generateAccessAndRefreshToken(user._id)
@@ -40,7 +31,7 @@ export const signup = async (req, res) => {
         .status(201)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-        .json({ _id: user._id, email: user.email, fullname: user.fullname, avatar: user.avatar, message: "User created successfully" })
+        .json({ _id: user._id, email: user.email, fullname: user.fullname,message: "User created successfully" })
     }
     else {
         return res.status(400).json({ message: "User not created" });
@@ -129,7 +120,7 @@ export const updateProfileAvatar = async (req, res) => {
 //controller for checking auth
 export const checkAuth = async (req, res) => {
     try {
-        res.status(200).json({ message: "User is authenticated" },req.user);
+        res.status(200).json(req.user);
     } catch (error) {
         console.log("Error in checkAuth", error);
         return res.status(500).json({ message: "Internal server error" });
