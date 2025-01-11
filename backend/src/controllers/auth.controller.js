@@ -31,7 +31,7 @@ export const signup = async (req, res) => {
         .status(201)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-        .json({ _id: user._id, email: user.email, fullname: user.fullname,message: "User created successfully" })
+        .json({ _id: user._id, email: user.email, fullname: user.fullname,createdAt:user.createdAt,message: "User created successfully" })
     }
     else {
         return res.status(400).json({ message: "User not created" });
@@ -59,7 +59,7 @@ export const login = async (req, res) => {
     .status(201)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .json({ _id: user._id, email: user.email, fullname: user.fullname , message: "Login successful" })
+    .json({ _id: user._id, email: user.email, fullname: user.fullname ,createdAt:user.createdAt, message: "Login successful" })
 }
 export const logout = async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, { 
@@ -78,43 +78,31 @@ export const logout = async (req, res) => {
     .json({ message: "Logged out successfully" })
 }  
 
-//controller for updating profile details and avatar
-export const updateProfileDetails = async (req, res) => {
-    const {fullname, email} = req.body
-    if (!fullname || !email) {
-        return res.status(400).json({ message: "Please fill in all fields" });
-    }
-    const user = await User.findByIdAndUpdate(req.user._id, {
-        $set:{
-        fullname: fullname.toLowerCase(),
-        email,
-    }}, {
-        new: true,
-    }).select("-password")
-    return res
-    .status(201)
-    .json({email: user.email, fullname: user.fullname, message: "Profile updated successfully" })
+//controller for updating avatar
 
-
-}
 export const updateProfileAvatar = async (req, res) => {
-    const avatarLocalPath = req.file?.path
-    if (!avatarLocalPath) {
-        return res.status(400).json({ message: "Please upload an avatar" });
+    try {
+        const {avatarLocalPath} = req.body
+        if (!avatarLocalPath) {
+            return res.status(400).json({ message: "Please upload an avatar" });
+        }
+        const avatar =  await uploadOnCloudinary(avatarLocalPath)
+        if (!avatar) {
+            return res.status(500).json({ message: "PLease Upload an avatar" });
+        }
+        const user = await User.findByIdAndUpdate(req.user._id, {
+            $set:{
+            avatar,
+        }}, {
+            new: true,
+        }).select("-password")
+        return res
+        .status(201)
+        .json({email: user.email, fullname: user.fullname, avatar: user.avatar,createdAt:user.createdAt, message: "Avatar updated successfully" })
+    } catch (error) {
+        console.log("error in profile Update",error)
+        res.status(500).json({message:"internal server error"})
     }
-    const avatar =  await uploadOnCloudinary(avatarLocalPath)
-    if (!avatar) {
-        return res.status(500).json({ message: "PLease Upload an avatar" });
-    }
-    const user = await User.findByIdAndUpdate(req.user._id, {
-        $set:{
-        avatar,
-    }}, {
-        new: true,
-    }).select("-password")
-    return res
-    .status(201)
-    .json({email: user.email, fullname: user.fullname, avatar: user.avatar, message: "Avatar updated successfully" })
 }
 
 //controller for checking auth
